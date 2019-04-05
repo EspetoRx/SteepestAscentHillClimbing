@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt_Br">
+<head>
+
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Steepest Ascent Hill-Climbing</title>
+
+	<!-- BOOTSTRAP -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+	<!-- VIS -->
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.css">
+
+	<!-- DATATABLES -->
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+	<script type="text/javascript" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+	<style type="text/css">
+		.padding-top-20px{
+			padding-top: 20px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<h1 class="text-center padding-top-20px">Steepest Ascent Hill-Climbing</h1>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12 text-center padding-top-20px">
+				Função objetivo FO = x² (Maximização)<br>
+				Assumir x entre [-10,10] -- X = 3<br>
+				Tweek randômico de 10%<br>
+				Número de perturbações = 1
+			</div>
+		</div>
+		<div class="row padding-top-20px">
+			<div class="col-md-12" id="graficoHillClimbing">
+				
+			</div>
+			<div class="col-md-12 text-center padding-top-20px">
+				Função objetivo FO = x² (Maximização)<br>
+				Assumir x entre [-10,10] -- X aleatório<br>
+				Tweek randômico de 10%<br>
+				Número de perturbações = 1<br>
+				Número de iterações = 30x
+			</div>
+		</div>
+		<div class="row padding-top-20px">
+			<div class="col-md-12" id="graficoHillClimbing2">
+				
+			</div>
+		</div>
+		<div class="row text-center padding-top-20px">
+			<div class="col-md-12" id="resultados1">
+				
+			</div>
+		</div>
+		<div class="row text-center">
+			<div class="col-md-12 text-center padding-top-20px">
+				Função objetivo FO = -20 exp(-0.2 sqrt(0.5*(x^2 + y^2))) - exp(0.5(cos(2pi*y) + cos(2pi*x))) + e + 20 (Minimização)<br>
+				X, Y aleatório<br>
+				Tweek copia/2 - randômico de 10%<br>
+				Número de perturbações = 1<br>
+				Condição de parada do Loop = (sx>0.00003 && sy>0.00003)
+			</div>
+			<div class="col-md-12" id="graficoHillClimbing3">
+			</div>
+			<div class="col-md-12 padding-top-20px" id="tabelaClibing3">
+				
+			</div>
+		</div>
+		<div class="row text-center padding-top-20px">
+			<div class="col-md-12 text-center padding-top-20px">
+				Função objetivo FO = -20 exp(-0.2 sqrt(0.5*(x^2 + y^2))) - exp(0.5(cos(2pi*y) + cos(2pi*x))) + e + 20 (Minimização)<br>
+				X, Y aleatório<br>
+				Tweek copia/2 - randômico de 10%<br>
+				Número de perturbações = 100<br>
+				Condição de parada do Loop = (sx>0.00003 && sy>0.00003)
+			</div>
+			<div class="col-md-12" id="graficoX">
+				
+			</div>
+			<div class="col-md-12" id="infoX">
+				
+			</div>
+		</div>
+		<div class="row text-center padding-top-20px">
+			<div class="col-md-12" id="graficoY">
+				
+			</div>
+			<div class="col-md-12" id="infoY">
+				
+			</div>
+		</div>
+	</div>
+</body>
+
+	<!-- BOOTSTRAP -->
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+	<!-- VIS -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+
+	<!-- DATATABLES -->
+	
+
+	<script type="text/javascript">
+
+		function getRandomNumber(max, min){
+			return Math.random()*(max-min+1)+min;
+		}
+
+		function getRandomInt(max, min){
+			var valor = Math.floor(Math.random()*(max-min+1)+min)
+			if(valor != 0){
+				return valor;
+			}else{
+				while(valor==0 || valor==2){
+					valor = Math.floor(Math.random()*(max-min+1)+min);
+				}
+				return valor;
+			}
+		}
+
+		function SAHC(n, s){
+			/*n <-  número de perturbações desejadas para o gradiente de exemplo*/
+			/*s <- alguma solução candidata*/
+			var callback, k=0, j=[];
+			//console.log("S = " + s);
+			do{
+				var copiaS = s;
+				var r = tweak(copiaS);
+				for(var i=0; i<n-1; i++){
+					var w = tweak(copiaS);
+					if(Math.pow(w,2) > Math.pow(r,2)){
+						r = w;
+					}
+				}
+				if(Math.pow(r,2) > Math.pow(s,2)){
+					callback = s;
+					s = r;
+				}
+				k++;
+				j.push(s);
+				//console.log('S = ' + s);
+			}while(s>-10 && s<10);
+			//console.log('callback = ' + callback + ' Laco externo = ' + (k-1));
+			//console.log(j);
+			return j;
+		}
+
+		function tweak(copia){
+			var random = getRandomNumber(10, 1)/100;
+			var t = copia + random*copia;
+			//console.log('Random = ' + random + ' T = ' + t);
+			return t;
+		}
+
+		function imprimeTabelaHC(){
+			var s = getRandomInt(10, -10);
+			j = SAHC(1, 3);
+			for(var k = 0; k<j.length; k++){
+				if(k!=(j.length-1)){
+					//console.log(j[k]);
+				}
+			}
+			return graficoDataSet(j);
+		}
+
+		function graficoDataSet(j){
+			var grafico = [];
+			var option;
+			for(var i=0; i<j.length-1; i++){
+				option = {x: i, y: j[i]};
+				grafico.push(option);
+			}
+			return grafico;
+		}
+
+		var dataSet = imprimeTabelaHC();
+
+		var container = document.getElementById('graficoHillClimbing');
+		var dataset = new vis.DataSet(dataSet);
+		var options = {};
+		var Graph2d = new vis.Graph2d(container, dataset, options);
+
+		function SAHC2(n, s){
+			/*n <-  número de perturbações desejadas para o gradiente de exemplo*/
+			/*s <- alguma solução candidata*/
+			var callback, k=0, j=[];
+			//console.log("S = " + s);
+			do{
+				var copiaS = s;
+				var r = tweak(copiaS);
+				for(var i=0; i<n-1; i++){
+					var w = tweak(copiaS);
+					if(Math.pow(w,2) > Math.pow(r,2)){
+						r = w;
+					}
+				}
+				if(Math.pow(r,2) > Math.pow(s,2)){
+					callback = s;
+					s = r;
+				}
+				k++;
+				j.push(s);
+				//console.log('S = ' + s);
+			}while(s>-10 && s<10);
+			//console.log('callback = ' + callback + ' Laco externo = ' + (k-1));
+			//console.log(j);
+			return callback;
+		}
+
+		function TrintaIteraçoes(){
+			var vetor = [];
+			var media = 0, dp = 0;
+			var vetor2 = [];
+			var min, max;
+			for (var i = 0; i<30; i++){
+				var s = getRandomInt(10, -10);
+				//console.log('S = ' + s);
+				var info = SAHC2(100, s);
+				var valor = {x: i, y:info};
+				vetor.push(valor);
+				vetor2.push(info);
+				media += info;
+				if(i==0){
+					min = info;
+					max = info;
+				}
+				if(info < min){
+					min = info;
+				}
+				if(info > max){
+					max = info;
+				}
+
+			}
+			var options = {
+			    style: 'bar',
+			    width:  '100%',
+			};
+			var container = document.getElementById('graficoHillClimbing2');
+			var dataset = new vis.DataSet(vetor);
+			var Graph2d = new vis.Graph2d(container, dataset, options);
+			media /= 30;
+			for(var j=0; j<30; j++){
+				dp += Math.pow(Math.abs(vetor2[j]-media), 2);
+			}
+			dp /= 30;
+			dp = Math.sqrt(dp);
+			$('#resultados1').html("Média: " + media + ", Mínimo: " + min + ", Máximo: " + max + ", Desvio Padrão: " + dp);
+		}
+
+		TrintaIteraçoes();
+
+		function ackley(x, y){
+			var res = -20*Math.pow(Math.E, (0.5*Math.pow((Math.pow(x,2)+Math.pow(y,2)), 0.5)))-Math.pow(Math.E, (0.5*(Math.cos(2*Math.PI*x) + Math.cos(2*Math.PI*y)))) + Math.E + 20;
+			return res;
+		}
+
+		function tweak2(copia){
+			var random = getRandomNumber(10, 1)/100;
+			var t = (copia/2) - random*copia;
+			return t;
+		}
+
+		function SAHCAckley(n, sx, sy){
+			/*n <-  número de perturbações desejadas para o gradiente de exemplo*/
+			/*s <- alguma solução candidata*/
+			var callbackx, callbacky, k=0, j=[];
+			//console.log("Sx = " + sx + " Sy = " + sy);
+			do{
+				var copiaSx = sx;
+				var copiaSy = sy;
+				var rx = tweak2(copiaSx);
+				var ry = tweak2(copiaSy);
+				//console.log("Rx = " + rx + " Ry = " + ry);
+				for(var i=0; i<n; i++){
+					var wx = tweak2(copiaSx);
+					var wy = tweak2(copiaSy);
+					//console.log("Wx = " + wx + " Wy = " + wy);
+					if(ackley(wx, wy) > ackley(rx, ry)){
+						rx = wx;
+						ry = wy;
+					}
+				}
+				if(ackley(rx, ry) > ackley(sx, sy)){
+					callbackx = sx;
+					callbacky = sy;
+					sx = rx;
+					sy = ry
+				}
+				k++;
+				j.push({x: sx, y:sy, z:ackley(sx, sy)});
+			}while(sx>0.00003 || sy>0.00003);
+			//console.log('callbackx = ' + callbackx + ' callbacky = ' + callbacky + ' Laco externo = ' + (k-1));
+			return callbackx, callbacky, j;
+		}
+
+		function rodaHillClimbingAckley(){
+			var callbackx , calbacky, j = SAHCAckley(1, getRandomInt(5, -5), getRandomInt(5, -5));
+			var container = document.getElementById('graficoHillClimbing3');
+			//console.log(container);
+			var dataSet = new vis.DataSet(j);
+			var options = {
+				style: 'line',
+			};
+    		var graph2d = new vis.Graph3d(container, dataSet, options);
+    		var tabelaClimbing3 = '<table class="table-responsive dataTable" id="table3">'+
+    		'<thead>'+
+    		'<tr>'+
+    		'<td>X</td>'+
+    		'<td>Y</td>'+
+    		'<td>Resultado Ackley\'s function</td>'+
+    		'</tr>'+
+    		'</thead>'+
+    		'<tbody>';
+    		for (var i=0; i<j.length; i++){
+    			tabelaClimbing3 += '<tr>'+
+    			'<td>' + j[i].x + '</td>'+
+    			'<td>' + j[i].y + '</td>'+
+    			'<td>' + j[i].z + '</td>'+
+    			'</tr>';
+    		}
+    		tabelaClimbing3 += '</tbody>'+
+    		'<tfooter>'+
+    		'<tr>'+
+    		'<td>X</td>'+
+    		'<td>Y</td>'+
+    		'<td>Resultado Ackley\'s function</td>'+
+    		'</tr>'+
+    		'</tfooter>'+
+    		'</table>';
+    		$('#tabelaClibing3').html(tabelaClimbing3);
+		}
+		
+		rodaHillClimbingAckley();
+		
+		$(document).ready( function () {
+		    $('#table3').DataTable();
+		} );
+
+		function RodaTrintaVezes(){
+			var vectorx = [];
+			var vectory = [];
+			var mediaX=0, mediaY = 0, dpX = 0, dpY = 0;
+			var minX, maxX, minY, maxY
+			for(var a=0; a<30; a++){
+				var x, y, j = SAHCAckley(100, getRandomInt(5, -5), getRandomInt(5, -5));
+				vectorx.push({x: a, y: j[j.length-1].x});
+				vectory.push({x: a, y: j[j.length-1].y});
+				mediaX += j[j.length-1].x;
+				mediaY += j[j.length-1].y;
+				if(a==0){
+					minX = j[j.length-1].x;
+					maxX = j[j.length-1].x;
+					minY = j[j.length-1].y;
+					maxY = j[j.length-1].y;
+				}
+				if(j[j.length-1].x < minX){
+					minX = j[j.length-1].x;
+				}
+				if(j[j.length-1].x > maxX){
+					maxX = j[j.length-1].x;
+				}
+				if(j[j.length-1].y < minY){
+					minY = j[j.length-1].y;
+				}
+				if(j[j.length-1].y > maxY){
+					maxY = j[j.length-1].y;
+				}
+			}
+			mediaX /= 30;
+			mediaY /= 30;
+			for(var b=0; b<30; b++){
+				dpX += Math.pow(Math.abs(vectorx[b].y - mediaX), 2);
+				dpY += Math.pow(Math.abs(vectorx[b].y - mediaY), 2);
+			}
+			dpX = Math.sqrt(dpX);
+			dpY = Math.sqrt(dpY);
+			//console.log(vectorx);
+			var options = {
+			    style: 'bar',
+			    width:  '100%',
+			};
+			var container = document.getElementById('graficoX');
+			var dataset = new vis.DataSet(vectorx);
+			var Graph2dX = new vis.Graph2d(container, dataset, options);
+			var container2 = document.getElementById('graficoY');
+			var dataset2 = new vis.DataSet(vectory);
+			var Graph2dY = new vis.Graph2d(container2, dataset2, options);
+			$('#infoX').html("Valores de X (Ackley's)<br>Média: " + mediaX + ", Mínimo: " + minX + ", Máximo: " + maxX + ", Desvio Padrão: " + dpX);
+			$('#infoY').html("Valores de Y (Ackley's)<br>Média: " + mediaY + ", Mínimo: " + minY + ", Máximo: " + maxY + ", Desvio Padrão: " + dpY);
+		}
+
+		RodaTrintaVezes();
+	</script>
+</html>
